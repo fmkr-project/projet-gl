@@ -4,7 +4,7 @@ Objectif : Créer deux personas et des scénarios qui représentent les principa
 Activité : L'équipe doit développer des personas basées sur le public cible et créer des scénarios détaillés décrivant les interactions de ces utilisateurs avec le système.
 Livrables : Personas, scénarios et une liste initiale des fonctionnalités
 
-Persona 1 : Lucie, Chef de Projet
+**Persona 1** : Lucie, Chef de Projet
 Profil :  
   Âge : 35 ans
   Profession : Chef de Projet Technique
@@ -29,7 +29,7 @@ Scénario d'Utilisation :
   Rapports : À la fin de chaque sprint, elle génère un rapport sur la productivité de l’équipe pour évaluer le respect des délais et des objectifs. 
              Elle partage ensuite ces rapports avec les parties prenantes.
 
-Persona 2 : Antoine, Développeur Frontend
+**Persona 2** : Antoine, Développeur Frontend
 Profil : 
   Âge : 28 ans
   Profession : Développeur Frontend
