@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}Détails du Projet{% endblock %}
+
+{% block content %}
+    <h2>Projet : {{ projet.nom }}</h2>
+    <p>Description : {{ projet.description }}</p>
+    <p>Date de début : {{ projet.date_debut }}</p>
+    <p>Date de fin : {{ projet.date_fin }}</p>
+
+    <h3>Tâches associées :</h3>
+    <ul>
+        {% for tache in taches %}
+        <li>{{ tache.titre }} - {{ tache.statut }}</li>
+        {% empty %}
+        <li>Aucune tâche.</li>
+        {% endfor %}
+    </ul>
+{% endblock %}
