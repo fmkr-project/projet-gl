@@ -8,6 +8,8 @@ class Projet(models.Model):
     date_debut = models.DateField()
     date_fin = models.DateField()
 
+    membres = models.ManyToManyField(User, related_name='projets')
+
 
     def __str__(self):
         return self.nom

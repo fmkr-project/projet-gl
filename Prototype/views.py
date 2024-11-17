@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from .models import Projet,Tache
-
+from django.contrib.auth.models import User
 
 
 @login_required
@@ -10,6 +10,11 @@ def liste_projets(request):
     taches = Projet.objects.all()
     return render(request, 'gestion_projets/liste_projets.html', {'projets': projets, 'tache': taches})
 
+@login_required
+def mes_projets(request,user_id):
+    user = get_object_or_404(User, id=user_id)
+    projets = user.projets.all()
+    return render(request,'gestion_projets/mes_projets.html',{'projets' : projets})
 
 @login_required
 def detail_projet(request, projet_id):
