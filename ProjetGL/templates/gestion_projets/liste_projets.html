@@ -6,6 +6,7 @@
 </head>
 <body>
 <h1>Liste des Projets</h1>
+<a href="{% url 'rapport_projets' %}" ><button>Générer un rapport</button></a>
 <ul>
     {% for projet in projets %}
     <li>

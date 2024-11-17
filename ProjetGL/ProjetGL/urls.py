@@ -20,6 +20,7 @@ from Prototype import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('projets/', views.liste_projets, name='liste_projets'),
+    path('projets/all/', views.projects_summary, name='rapport_projets'),
     path('projets/<int:projet_id>/', views.detail_projet, name='detail_projet'),
 
 ]
