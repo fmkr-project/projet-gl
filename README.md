@@ -118,4 +118,44 @@ Activité : Organiser le backlog sur GitHub avec les fonctionnalités divisées 
 Commencer l'implémentation des fonctionnalités essentielles comme la création de tâches et l'authentification.
 Livrables : Première version fonctionnelle avec les fonctionnalités essentielles implémentées et backlog organisé  
 
+----------
+
+Semaine 4
+Implémentation des Fonctionnalités Essentielles  
+Objectif : Finaliser l'implémentation complète des fonctionnalités essentielles pour assurer le bon fonctionnement de l'application. 
+Activité : Terminer les fonctionnalités critiques telles que la gestion des tâches, la connexion et la visualisation de l'avancement. Si le temps le permet, commencer à travailler sur les fonctionnalités souhaitables comme la personnalisation de l'interface.  
+Livrables : Fonctionnalités essentielles terminées et, si possible, progrès sur les fonctionnalités souhaitables.   
+
+
+----------
+Semaine 5   
+Tests Basique et Affinement  
+Objectif : Introduire des tests simples pour garantir la stabilité du système et affiner les fonctionnalités déjà implémentées.  
+Activité : Mettre en place des tests basiques pour les fonctionnalités principales (création de tâches, connexion). Affiner le code en fonction des retours initiaux.  
+Livrables : Tests basiques implémentés et affinement de l'application.  
+
+----------
+Semaine 6 
+Fonctionnalités Souhaitables et Collaboration (Optionnel)  
+Objectif : Ajouter les fonctionnalités souhaitables et, pour les équipes qui le souhaitent, implémenter la fonctionnalité de collaboration.  
+Activité : Ajouter des fonctionnalités souhaitables comme la personnalisation des tâches ou des filtres avancés. Les équipes qui souhaitent relever un défi supplémentaire peuvent implémenter la fonctionnalité de collaboration, permettant à plusieurs utilisateurs de gérer des tâches partagées.  
+Livrables : Fonctionnalités souhaitables implémentées et, optionnellement, la fonctionnalité de collaboration.  
+
+
+----------
+Semaine 7 
+Présentation Finale  
+Objectif : Présenter la version finale du projet en expliquant le processus de développement, les personas, les scénarios et les histoires d'utilisateur.  
+Activité : Préparer une présentation mettant en avant les personas, scénarios, backlog, développement incrémental et la distinction entre fonctionnalités essentielles et souhaitables.  
+Livrables : Présentation finale du projet.  
+
+
+----------
+Critères d'évaluation
+Personas et Scénarios : Qualité et pertinence des personas et scénarios créés.  
+Histoires d'Utilisateur : Clarté des histoires et leur contribution à l'orientation du développement.  
+Développement Incrémental : Efficacité dans le développement incrémental et la livraison des prototypes.  
+Fonctionnalités Indispensables vs. Souhaitables : Mise en œuvre réussie des fonctionnalités essentielles, avec un bonus pour ceux qui implémentent des fonctionnalités souhaitables et la collaboration.  
+Travail d'Équipe et Gestion du Code : Utilisation de systèmes de contrôle de version et collaboration efficace entre les membres de l'équipe.  
+
 
