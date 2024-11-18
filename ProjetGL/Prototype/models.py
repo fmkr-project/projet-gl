@@ -2,28 +2,24 @@ from django.db import models
 from django.db.models import F, Q, Count
 from django.contrib.auth.models import User
 
+from django.db import models
+from django.contrib.auth.models import User
+
 class Projet(models.Model):
+    id = models.AutoField(primary_key=True)
     nom = models.CharField(max_length=100)
     description = models.TextField()
     date_debut = models.DateField()
     date_fin = models.DateField()
-    '''
-    fini = models.GeneratedField(
-        expression=Count("tache"),
-        output_field=models.IntegerField(),
-        db_persist=True
-    )
 
-    nbtaches = models.GeneratedField(
-        expression=Count("tache", filter=Q(projet=nom)),
-        output_field=models.IntegerField(),
-        db_persist=True
-    )
-    '''
+    membres = models.ManyToManyField(User, related_name='projets')
+
+
     def __str__(self):
         return self.nom
 
 class Tache(models.Model):
+    id = models.AutoField(primary_key=True)
     titre = models.CharField(max_length=100)
     description = models.TextField()
     responsable = models.ForeignKey(User, on_delete=models.CASCADE)

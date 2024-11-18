@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}Détails du Projet{% endblock %}
+
+{% block content %}
+    <h2>Projet : {{ projet.nom }}</h2>
+    <p>Description : {{ projet.description }}</p>
+    <p>Date de début : {{ projet.date_debut }}</p>
+    <p>Date de fin : {{ projet.date_fin }}</p>
+
+    <h3>Tâches associées :</h3>
+    <ul>
+        {% for tache in taches %}
+        <li>
+            {{ tache.titre }}<br>
+            Description :{{ tache.description }}<br>
+            Responsable : {{ tache.responsable.username }}<br>
+            Statut : {{ tache.statut }}<br>
+            <a href="{% url 'supprimer_tache' tache.id %}">Supprimer</a>
+        </li>
+            
+        {% empty %}
+        <li>Aucune tâche.</li>
+        {% endfor %}
+    </ul>
+    
+    <h3>Ajouter une tâche :</h3>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Ajouter la tâche</button>
+    </form>
+{% endblock %}

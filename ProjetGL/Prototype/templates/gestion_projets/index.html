@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}Accueil{% endblock %}
+
+{% block content %}
+    <h1>Tableau Kanban</h1>
+    <div class="kanban-board">
+        <!-- Colonne "À faire" -->
+        <div class="kanban-column">
+            <h2>À faire</h2>
+            {% for tache in taches_a_faire %}
+            <div class="task">
+                Projet : {{ tache.projet.nom }}<br>
+                <strong>{{ tache.titre }}</strong><br>
+                {{ tache.description }}<br>
+                Responsable : {{ tache.responsable }}
+            </div>
+            {% empty %}
+            <p>Aucune tâche.</p>
+            {% endfor %}
+        </div>
+
+        <!-- Colonne "En cours" -->
+        <div class="kanban-column">
+            <h2>En cours</h2>
+            {% for tache in taches_en_cours %}
+            <div class="task">
+                Projet : {{ tache.projet.nom }}<br>
+                <strong>{{ tache.titre }}</strong><br>
+                {{ tache.description }}<br>
+                Responsable : {{ tache.responsable }}
+            </div>
+            {% empty %}
+            <p>Aucune tâche.</p>
+            {% endfor %}
+        </div>
+
+        <!-- Colonne "Terminées" -->
+        <div class="kanban-column">
+            <h2>Terminées</h2>
+            {% for tache in taches_terminees %}
+            <div class="task">
+                Projet : {{ tache.projet.nom }}<br>
+                <strong>{{ tache.titre }}</strong><br>
+                {{ tache.description }}<br>
+                Responsable : {{ tache.responsable }}
+            </div>
+            {% empty %}
+            <p>Aucune tâche.</p>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

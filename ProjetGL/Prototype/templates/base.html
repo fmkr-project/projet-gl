@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Mon Application{% endblock %}</title>
+    <style>
+        /* Exemple de styles pour le header */
+        header {
+            background: #333;
+            color: white;
+            padding: 15px;
+            text-align: center;
+        }
+        nav {
+            margin-top: 10px;
+        }
+        nav a {
+            color: white;
+            margin: 0 10px;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        {% if user.is_authenticated %}
+           Bonjour, {{ user.username }} !
+        {% else %}
+            <a href="{% url 'login' %}">Se connecter</a>
+        {% endif %}
+    
+        <h1>Mon Application</h1>
+        <nav>
+            <a href="/">Accueil</a>
+            <a href="{% url 'mes_projets' user.id %}">Mes projets</a>
+            {% if user.is_authenticated %}
+                <form method="post" action="{% url 'logout' %}" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" style="background: none; border: none; color: inherit; cursor: pointer; padding: 0; font: inherit;">Se déconnecter</button>
+                </form>
+            {% endif %}
+        </nav>
+    </header>
+    <main>
+        {% block content %}
+        <!-- Le contenu spécifique à chaque page sera inséré ici -->
+        {% endblock %}
+    </main>
+    <footer>
+        <p>&copy; 2024 - Mon Application</p>
+    </footer>
+</body>
+</html>
