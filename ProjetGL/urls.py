@@ -26,6 +26,7 @@ urlpatterns = [
     path('login/', auth_views.LoginView.as_view(template_name='login.html'), name='login'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
     path('mes_projets/<int:user_id>/', views.mes_projets, name='mes_projets'),
+    path('taches/delete/<int:tache_id>/',views.supprimer_tache,name='supprimer_tache'),
 
 
 ]

@@ -11,9 +11,28 @@
     <h3>Tâches associées :</h3>
     <ul>
         {% for tache in taches %}
-        <li>{{ tache.titre }} - {{ tache.statut }}</li>
+        <li>
+            <tr>
+                <td>{{ tache.titre }}</td><br>
+                <td>Description :{{ tache.description }}</td><br>
+                <td>Responsable : {{ tache.responsable.username }}</td><br>
+                <td>Statut : {{ tache.statut }}</td><br>
+                <td>
+                    <a href="{% url 'supprimer_tache' tache.id %}">Supprimer</a>
+                </td>
+            </tr>
+            
+        </li>
+            
         {% empty %}
         <li>Aucune tâche.</li>
         {% endfor %}
     </ul>
+    
+    <h3>Ajouter une tâche :</h3>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Ajouter la tâche</button>
+    </form>
 {% endblock %}
