@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Mes Projets{% endblock %}
+
+{% block content %}
+<ul>
+    {% for projet in projets %}
+    <li>
+        <strong>{{ projet.nom }}</strong><br>
+        {{ projet.description }}<br>
+        <a href="{% url 'detail_projet' projet.id %}">
+            <button>Voir le projet</button>
+        </a>
+    </li>
+    {% endfor %}
+</ul>
+{% endblock %}
