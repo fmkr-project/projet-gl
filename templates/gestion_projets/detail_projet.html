@@ -12,16 +12,11 @@
     <ul>
         {% for tache in taches %}
         <li>
-            <tr>
-                <td>{{ tache.titre }}</td><br>
-                <td>Description :{{ tache.description }}</td><br>
-                <td>Responsable : {{ tache.responsable.username }}</td><br>
-                <td>Statut : {{ tache.statut }}</td><br>
-                <td>
-                    <a href="{% url 'supprimer_tache' tache.id %}">Supprimer</a>
-                </td>
-            </tr>
-            
+            {{ tache.titre }}<br>
+            Description :{{ tache.description }}<br>
+            Responsable : {{ tache.responsable.username }}<br>
+            Statut : {{ tache.statut }}<br>
+            <a href="{% url 'supprimer_tache' tache.id %}">Supprimer</a>
         </li>
             
         {% empty %}
