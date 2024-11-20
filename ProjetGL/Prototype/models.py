@@ -1,8 +1,4 @@
 from django.db import models
-from django.db.models import F, Q, Count
-from django.contrib.auth.models import User
-
-from django.db import models
 from django.contrib.auth.models import User
 
 class Projet(models.Model):
@@ -36,3 +32,13 @@ class Tache(models.Model):
 
     def __str__(self):
         return self.titre
+
+class Commentaire(models.Model):
+    tache = models.ForeignKey('Tache', on_delete=models.CASCADE, related_name='commentaires')
+    auteur = models.ForeignKey(User, on_delete=models.CASCADE)
+    contenu = models.TextField()
+    date_creation = models.DateTimeField(auto_now_add=True)  # Date de création
+    date_modification = models.DateTimeField(auto_now=True)  # Date de dernière modification
+
+    def __str__(self):
+        return f"{self.auteur.username}: {self.contenu[:30]}"

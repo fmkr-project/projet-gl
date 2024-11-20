@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Détail de la tache{% endblock %}
+
+{% block content %}
+<h1>Détails de la tâche</h1>
+    <div class="task-header">
+        <div>
+            <h2>{{ tache.titre }}</h2>
+            <p><strong>Statut :</strong> {{ tache.get_statut_display }}</p>
+            <p><strong>Responsable :</strong> {{ tache.responsable }}</p>
+            <p>{{ tache.description }}</p>
+        </div>
+        <div>
+            <a href="{% url 'changer_statut_tache' tache.id 'a_faire' %}">À faire</a> |
+            <a href="{% url 'changer_statut_tache' tache.id 'en_cours' %}">En cours</a> |
+            <a href="{% url 'changer_statut_tache' tache.id 'termine' %}">Terminé</a>
+        </div>
+    </div>
+
+    <div class="comments-section">
+        <h3>Commentaires</h3>
+        <form method="post">
+            {% csrf_token %}
+            <textarea name="contenu" rows="3" placeholder="Ajouter un commentaire..."></textarea>
+            <button type="submit">Publier</button>
+        </form>
+        <ul>
+            {% for commentaire in tache.commentaires.all %}
+            <li>
+                <strong>{{ commentaire.auteur.username }}</strong> - {{ commentaire.date_creation|date:"d/m/Y H:i" }}
+                {% if commentaire.date_creation != commentaire.date_modification %}
+                    <small>(Modifié)</small>
+                {% endif %}
+                <br>
+                {{ commentaire.contenu }}
+                {% if commentaire.auteur == user %}
+                    <a href="{% url 'modifier_commentaire' commentaire.id %}">Modifier</a> |
+                    <a href="{% url 'supprimer_commentaire' commentaire.id %}">Supprimer</a>
+                {% endif %}
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endblock %}

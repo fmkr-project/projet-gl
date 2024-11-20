@@ -16,7 +16,9 @@
             Description :{{ tache.description }}<br>
             Responsable : {{ tache.responsable.username }}<br>
             Statut : {{ tache.statut }}<br>
+            <a href="{% url 'detail_tache' tache.id %}">Voir le détail</a><br>
             <a href="{% url 'supprimer_tache' tache.id %}">Supprimer</a>
+        
         </li>
             
         {% empty %}

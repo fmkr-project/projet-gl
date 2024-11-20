@@ -27,6 +27,9 @@ urlpatterns = [
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
     path('mes_projets/<int:user_id>/', views.mes_projets, name='mes_projets'),
     path('taches/delete/<int:tache_id>/',views.supprimer_tache,name='supprimer_tache'),
-
+    path('tache/<int:tache_id>/', views.detail_tache, name='detail_tache'),
+    path('tache/<int:tache_id>/changer-statut/<str:nouveau_statut>/', views.changer_statut_tache, name='changer_statut_tache'),
+    path('commentaire/<int:commentaire_id>/modifier/', views.modifier_commentaire, name='modifier_commentaire'),
+    path('commentaire/<int:commentaire_id>/supprimer/', views.supprimer_commentaire, name='supprimer_commentaire'),
 
 ]

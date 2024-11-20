@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}Modification Commentaire{% endblock %}
+
+{% block content %}
+<body>
+    <h1>Modifier le commentaire</h1>
+    <form method="post">
+        {% csrf_token %}
+        <textarea name="contenu" rows="4">{{ commentaire.contenu }}</textarea><br>
+        <button type="submit">Enregistrer</button>
+    </form>
+    <a href="{% url 'detail_tache' commentaire.tache.id %}">Annuler</a>
+</body>
+{% endblock %}
