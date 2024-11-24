@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}Détails du Projet{% endblock %}
 
@@ -16,20 +17,28 @@
             Description :{{ tache.description }}<br>
             Responsable : {{ tache.responsable.username }}<br>
             Statut : {{ tache.statut }}<br>
-            <a href="{% url 'detail_tache' tache.id %}">Voir le détail</a><br>
-            <a href="{% url 'supprimer_tache' tache.id %}">Supprimer</a>
-        
+            <td>
+                <form action="{% url 'detail_tache' tache.id %}" method="post" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="edit-btn">
+                        <img src="{% static 'images/fichier.png' %}" alt="Voir le détail">
+                    </button>
+                </form>
+            </td>
+            <td>
+                <form action="{% url 'supprimer_tache' tache.id %}" method="post" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="delete-btn">
+                        <img src="{% static 'images/bin.png' %}" alt="Supprimer">
+                    </button>
+                </form>
+            </td>
         </li>
             
         {% empty %}
         <li>Aucune tâche.</li>
         {% endfor %}
     </ul>
+
     
-    <h3>Ajouter une tâche :</h3>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Ajouter la tâche</button>
-    </form>
 {% endblock %}

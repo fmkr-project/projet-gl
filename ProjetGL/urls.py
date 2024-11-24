@@ -31,5 +31,10 @@ urlpatterns = [
     path('tache/<int:tache_id>/changer-statut/<str:nouveau_statut>/', views.changer_statut_tache, name='changer_statut_tache'),
     path('commentaire/<int:commentaire_id>/modifier/', views.modifier_commentaire, name='modifier_commentaire'),
     path('commentaire/<int:commentaire_id>/supprimer/', views.supprimer_commentaire, name='supprimer_commentaire'),
-
+    path('chefs_projets/', views.page_chef_projets, name='page_chef_projets'),
+    path('mes_taches/', views.mes_taches, name='mes_taches'),
+    path('projets/creer/', views.creer_projet, name='creer_projet'),
+    path('projets/<int:projet_id>/delete/',views.supprimer_projet,name='supprimer_projet'),
+    path('projets/<int:projet_id>/edit/', views.modifier_projet, name='modifier_projet'),
+    path('projets/<int:projet_id>/add/', views.ajouter_tache, name='ajouter_tache'),
 ]

@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}Creer Projets{% endblock %}
+
+{% block content %}
+   <h1>Créer un Nouveau Projet</h1>
+    <form method="POST">
+        {% csrf_token %}
+        <label for="nom">Nom du Projet :</label>
+        <input type="text" name="nom" required><br><br>
+        
+        <label for="description">Description :</label>
+        <textarea name="description" required></textarea><br><br>
+        
+        <label for="date_debut">Date de Début :</label>
+        <input type="date" name="date_debut" required><br><br>
+        
+        <label for="date_fin">Date de Fin :</label>
+        <input type="date" name="date_fin" required><br><br>
+        
+        <label for="membres">Choisir des Membres :</label>
+        <select name="membres" multiple>
+            {% for utilisateur in utilisateurs %}
+            <option value="{{ utilisateur.id }}">{{ utilisateur.username }}</option>
+            {% endfor %}
+        </select><br><br>
+        
+        <button type="submit">Créer le Projet</button>
+    </form>
+{% endblock %}

@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Mes Taches{% endblock %}
+
+{% block content %}
+<h1>Mes Tâches</h1>
+    {% if taches %}
+    <table>
+        <thead>
+            <tr>
+                <th>Titre</th>
+                <th>Description</th>
+                <th>Statut</th>
+                <th>Projet</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for tache in taches %}
+            <tr>
+                <td>{{ tache.titre }}</td>
+                <td>{{ tache.description }}</td>
+                <td>{{ tache.get_statut_display }}</td>
+                <td>{{ tache.projet.nom }}</td>
+                <td>
+                    <form action="{% url 'detail_tache' tache.id %}" method="post" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="info-btn">
+                                    <img src="{% static 'images/fichier.png' %}" alt="Voir le détail">
+                                </button>
+                    </form>
+                </td>
+                <td>
+                    <form action="{% url 'supprimer_tache' tache.id %}" method="post" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="delete-btn">
+                                    <img src="{% static 'images/bin.png' %}" alt="Supprimer">
+                                </button>
+                    </form>
+                </td>
+                
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>Vous n'avez aucune tâche assignée pour le moment.</p>
+    {% endif %}
+{% endblock %}

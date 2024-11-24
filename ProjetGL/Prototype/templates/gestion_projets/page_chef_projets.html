@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block title %}Gestion de Projets{% endblock %}
+
+{% block content %}
+<h1>Gestion des Projets</h1>
+
+    <!-- Lien pour créer un projet -->
+    <a href="{% url 'creer_projet' %}" class="button">Créer un Nouveau Projet</a><br><br>
+
+    <h2>Liste des Projets</h2>
+    {% if projets %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Nom du Projet</th>
+                    <th>Description</th>
+                    <th>Date de Début</th>
+                    <th>Date de Fin</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for projet in projets %}
+                <tr>
+                    <td>{{ projet.nom }}</td>
+                    <td>{{ projet.description }}</td>
+                    <td>{{ projet.date_debut|date:"d/m/Y" }}</td>
+                    <td>{{ projet.date_fin|date:"d/m/Y" }}</td>
+                    <td>
+                        <form action="{% url 'ajouter_tache' projet.id %}" method="post" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="add-btn">
+                                <img src="{% static 'images/add.png' %}" alt="ajouter une Tâche">
+                            </button>
+                        </form>
+                    </td>
+                    <td>
+                        <form action="{% url 'modifier_projet' projet.id %}" method="get" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="modify-btn">
+                                <img src="{% static 'images/edit.png' %}" alt="Modifier le projet">
+                            </button>
+                        </form>
+                    </td>
+                    <td>
+                        <form action="{% url 'supprimer_projet' projet.id %}" method="post" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="delete-btn">
+                                <img src="{% static 'images/bin.png' %}" alt="Supprimer le projet">
+                            </button>
+                        </form>
+                    </td>
+                    
+                    
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Aucun projet disponible.</p>
+    {% endif %}
+
+{% endblock %}

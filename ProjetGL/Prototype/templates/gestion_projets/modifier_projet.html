@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block title %}Gestion de Projets{% endblock %}
+
+{% block content %}
+<body>
+    <h1>Modifier le projet : {{ projet.nom }}</h1>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <label for="nom">Nom du projet :</label>
+        <input type="text" name="nom" value="{{ projet.nom }}" required><br><br>
+
+        <label for="description">Description :</label>
+        <textarea name="description" required>{{ projet.description }}</textarea><br><br>
+
+        <button type="submit">Enregistrer les modifications</button>
+    </form>
+
+    <a href="{% url 'page_chef_projets' %}">Retour à la gestion des projets</a>
+</body>
+{% endblock %}
