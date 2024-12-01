@@ -18,6 +18,8 @@
         </div>
         <button type="submit">Se connecter</button>
     </form>
+    <p>Ou créer un compte?</p>
+    <a href="{% url 'signup' %}" class="btn">Créer un compte</a>
     {% if form.errors %}
         <p style="color: red;">Nom d'utilisateur ou mot de passe incorrect.</p>
     {% endif %}

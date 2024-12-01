@@ -6,7 +6,8 @@ from django.urls import reverse
 
 
 from .models import Projet,Tache,Commentaire
-from .forms import TacheForm
+from .forms import TacheForm, SignUpForm
+
 
 @login_required
 def liste_projets(request):
@@ -213,3 +214,25 @@ def modifier_projet(request, projet_id):
 
     # Si la méthode est GET, on affiche le formulaire avec les valeurs actuelles du projet
     return render(request, 'gestion_projets/modifier_projet.html', {'projet': projet})
+
+
+def signup(request):
+    if request.method == 'POST':
+        form = SignUpForm(request.POST)
+        if form.is_valid():
+
+            user = form.save()
+
+            if form.cleaned_data.get('is_chef_projet'):
+                group, created = Group.objects.get_or_create(name='chef_projets')
+            else :
+                group, created = Group.objects.get_or_create(name='dev')
+
+            group.user_set.add(user)
+
+            return redirect('login')
+    else:
+        form = SignUpForm()
+    return render(request, 'signup.html', {'form': form})
+
+
