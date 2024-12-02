@@ -24,9 +24,16 @@ def mes_projets(request,user_id):
 
 @login_required
 def mes_taches(request):
-    # Filtrer les tâches assignées à l'utilisateur connecté
-    taches = Tache.objects.filter(responsable=request.user).order_by('statut')
-    return render(request, 'gestion_projets/mes_taches.html', {'taches': taches})
+    # Filtrer toutes les tâches attribuées à l'utilisateur connecté
+    taches_a_faire = Tache.objects.filter(statut='a_faire', responsable=request.user)
+    taches_en_cours = Tache.objects.filter(statut='en_cours', responsable=request.user)
+    taches_termine = Tache.objects.filter(statut='termine', responsable=request.user)
+
+    return render(request, 'gestion_projets/mes_taches.html', {
+        'taches_a_faire': taches_a_faire,
+        'taches_en_cours': taches_en_cours,
+        'taches_termine': taches_termine,
+    })
 
 @login_required
 def detail_projet(request, projet_id):
@@ -58,20 +65,29 @@ def login(request):
 
 @login_required
 def index(request):
+    # Récupérer tous les projets
+    projets = Projet.objects.all()
 
-    projet = Projet.objects.all()
-    # Regrouper les tâches par statut
-    taches_a_faire = Tache.objects.filter(statut='a_faire')
-    taches_en_cours = Tache.objects.filter(statut='en_cours')
-    taches_terminees = Tache.objects.filter(statut='termine')
+    # Si un projet est sélectionné, filtrez les tâches par projet
+    selected_projet_id = request.GET.get('projet')
+    if selected_projet_id:
+        selected_projet = get_object_or_404(Projet, id=selected_projet_id)
+        taches_a_faire = selected_projet.taches.filter(statut='a_faire')
+        taches_en_cours = selected_projet.taches.filter(statut='en_cours')
+        taches_termine = selected_projet.taches.filter(statut='termine')
+    else:
+        selected_projet = None
+        taches_a_faire = Tache.objects.filter(statut='a_faire')
+        taches_en_cours = Tache.objects.filter(statut='en_cours')
+        taches_termine = Tache.objects.filter(statut='termine')
 
     return render(request, 'gestion_projets/index.html', {
-        'projet': projet,
+        'projets': projets,
+        'selected_projet': selected_projet,
         'taches_a_faire': taches_a_faire,
         'taches_en_cours': taches_en_cours,
-        'taches_terminees': taches_terminees,
+        'taches_termine': taches_termine,
     })
-
 def changer_statut_tache(request, tache_id, nouveau_statut):
     # Récupérer la tâche avec l'ID
     tache = get_object_or_404(Tache, id=tache_id)
@@ -167,6 +183,7 @@ def ajouter_tache(request, projet_id):
     # Récupérer le projet
     projet = get_object_or_404(Projet, id=projet_id)
     taches = projet.taches.all()  # Utilise `related_name` pour accéder aux tâches
+    users = User.objects.all()
 
     if request.method == 'POST':
         form = TacheForm(request.POST)
@@ -190,32 +207,39 @@ def supprimer_projet(request, projet_id):
 @login_required
 @user_passes_test(est_chef_projet)
 def modifier_projet(request, projet_id):
-    # Récupérer le projet à partir de l'ID
     projet = get_object_or_404(Projet, id=projet_id)
+    membres = projet.membres.all()  # Utilisateurs assignés au projet
+    taches = projet.taches.all()   # Tâches associées au projet
 
-    # Si le formulaire est soumis (méthode POST).
     if request.method == 'POST':
-        # Récupérer les données du formulaire
-        nom = request.POST.get('nom')
-        description = request.POST.get('description')
-
-        print(f"Nom: {nom}, Description: {description}")  # Affiche les valeurs du formulaire
-
-        # Si le nom et la description sont fournis, les mettre à jour
-        if nom:
-            projet.nom = nom
-        if description:
-            projet.description = description
-
-        # Sauvegarder les modifications
+        # Mettre à jour les informations du projet
+        projet.nom = request.POST.get('nom')
+        projet.description = request.POST.get('description')
         projet.save()
 
-        # Rediriger vers la page de gestion des projets après la modification
-        print(f"Projet modifié: {projet.nom}")  # Vérifie que le projet a bien été modifié
-        return redirect('page_chef_projets')
+        # Mettre à jour les tâches
+        for tache in taches:
+            tache_titre = request.POST.get(f"titre_{tache.id}")
+            tache_statut = request.POST.get(f"statut_{tache.id}")
+            tache_responsable_id = request.POST.get(f"responsable_{tache.id}")
 
-    # Si la méthode est GET, on affiche le formulaire avec les valeurs actuelles du projet
-    return render(request, 'gestion_projets/modifier_projet.html', {'projet': projet})
+            if tache_titre:
+                tache.titre = tache_titre
+            if tache_statut:
+                tache.statut = tache_statut
+            if tache_responsable_id:
+                responsable = User.objects.filter(id=tache_responsable_id).first()
+                tache.responsable = responsable
+
+            tache.save()
+
+        return redirect('page_chef_projets')  # Rediriger après la sauvegarde
+
+    return render(request, 'gestion_projets/modifier_projet.html', {
+        'projet': projet,
+        'taches': taches,
+        'membres': membres,
+    })
 
 
 def signup(request):
@@ -238,3 +262,23 @@ def signup(request):
     return render(request, 'signup.html', {'form': form})
 
 
+@login_required
+@user_passes_test(est_chef_projet)
+def visualiser_avancement(request, projet_id):
+    # Récupérer le projet
+    projet = get_object_or_404(Projet, id=projet_id)
+
+    # Récupérer les tâches associées au projet
+    taches = projet.taches.all()
+
+    # Calculer l'avancement
+    total_taches = taches.count()
+    taches_terminees = taches.filter(statut='termine').count()
+
+    avancement = (taches_terminees / total_taches * 100) if total_taches > 0 else 0
+
+    return render(request, 'gestion_projets/avancement_projet.html', {
+        'projet': projet,
+        'taches': taches,
+        'avancement': avancement
+    })

@@ -1,66 +1,147 @@
 {% extends "base.html" %}
 {% load static %}
 
-
-{% block title %}Gestion de Projets{% endblock %}
+{% block title %}Gestion des Projets{% endblock %}
 
 {% block content %}
-<h1>Gestion des Projets</h1>
+<style>
+    .projet-container {
+        margin: 20px;
+    }
 
-    <!-- Lien pour créer un projet -->
-    <a href="{% url 'creer_projet' %}" class="button">Créer un Nouveau Projet</a><br><br>
+    .projet-header {
+        text-align: center;
+        margin-bottom: 20px;
+    }
 
-    <h2>Liste des Projets</h2>
-    {% if projets %}
-        <table>
-            <thead>
-                <tr>
-                    <th>Nom du Projet</th>
-                    <th>Description</th>
-                    <th>Date de Début</th>
-                    <th>Date de Fin</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for projet in projets %}
-                <tr>
-                    <td>{{ projet.nom }}</td>
-                    <td>{{ projet.description }}</td>
-                    <td>{{ projet.date_debut|date:"d/m/Y" }}</td>
-                    <td>{{ projet.date_fin|date:"d/m/Y" }}</td>
-                    <td>
-                        <form action="{% url 'ajouter_tache' projet.id %}" method="post" style="display:inline;">
-                            {% csrf_token %}
-                            <button type="submit" class="add-btn">
-                                <img src="{% static 'images/add.png' %}" alt="ajouter une Tâche">
-                            </button>
-                        </form>
-                    </td>
-                    <td>
-                        <form action="{% url 'modifier_projet' projet.id %}" method="get" style="display:inline;">
-                            {% csrf_token %}
-                            <button type="submit" class="modify-btn">
-                                <img src="{% static 'images/edit.png' %}" alt="Modifier le projet">
-                            </button>
-                        </form>
-                    </td>
-                    <td>
-                        <form action="{% url 'supprimer_projet' projet.id %}" method="post" style="display:inline;">
-                            {% csrf_token %}
-                            <button type="submit" class="delete-btn">
-                                <img src="{% static 'images/bin.png' %}" alt="Supprimer le projet">
-                            </button>
-                        </form>
-                    </td>
-                    
-                    
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    {% else %}
-        <p>Aucun projet disponible.</p>
-    {% endif %}
+    .projet-header h1 {
+        color: #333;
+    }
 
+    .projet-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+        font-size: 16px;
+        text-align: left;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .projet-table th,
+    .projet-table td {
+        border: 1px solid #ddd;
+        padding: 10px;
+    }
+
+    .projet-table th {
+        background-color: #f4f4f4;
+        font-weight: bold;
+        color: #333;
+    }
+
+    .projet-table tr:nth-child(even) {
+        background-color: #f9f9f9;
+    }
+
+    .projet-table tr:hover {
+        background-color: #f1f1f1;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 10px;
+    }
+
+    .btn {
+        padding: 5px 10px;
+        border: none;
+        border-radius: 4px;
+        text-decoration: none;
+        font-size: 14px;
+        text-align: center;
+        cursor: pointer;
+    }
+
+    .btn-modifier {
+        background-color: #ffc107;
+        color: #fff;
+    }
+
+    .btn-modifier:hover {
+        background-color: #e0a800;
+    }
+
+    .btn-ajout-tache{
+        background-color: #2b9e27;
+        color: #fff
+    }
+
+    .btn-ajout-tache:hover{
+        background-color: #276323
+    }
+
+    .btn-avancement {
+        background-color: #007bff;
+        color: #fff;
+    }
+
+    .btn-avancement:hover {
+        background-color: #0056b3;
+    }
+
+    .btn-supprimer {
+        background-color: #dc3545;
+        color: #fff;
+    }
+
+    .btn-supprimer:hover {
+        background-color: #c82333;
+    }
+</style>
+
+<div class="projet-container">
+    <div class="projet-header">
+        <h1>Gestion des Projets</h1>
+        <a class="btn btn-modifier" href="{% url 'creer_projet' %}">Créer un nouveau projet</a>
+    </div>
+
+    <table class="projet-table">
+        <thead>
+            <tr>
+                <th>Nom du Projet</th>
+                <th>Description</th>
+                <th>Date de Début</th>
+                <th>Date de Fin</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for projet in projets %}
+            <tr>
+                <td>{{ projet.nom }}</td>
+                <td>{{ projet.description }}</td>
+                <td>{{ projet.date_debut }}</td>
+                <td>{{ projet.date_fin }}</td>
+                <td>
+                    <div class="action-buttons">
+                        <a class="btn btn-modifier" href="{% url 'modifier_projet' projet.id %}">Modifier</a>
+                        <a class="btn btn-ajout-tache" href="{% url 'ajouter_tache' projet.id %}">Ajout d'une tache</a>
+                        <a class="btn btn-avancement" href="{% url 'visualiser_avancement' projet.id %}">Avancement</a>
+                        <form method="POST" action="{% url 'supprimer_projet' projet.id %}" style="display: inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-supprimer">Supprimer</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" style="text-align: center;">Aucun projet disponible.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{% url 'index' %}" class="btn btn-avancement">Retour à l'accueil</a>
+</div>
 {% endblock %}

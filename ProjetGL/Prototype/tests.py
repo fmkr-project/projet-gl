@@ -1,7 +1,6 @@
 from django.conf import settings
 from django.contrib.auth.models import User, Group
 from django.urls import reverse
-
 from Prototype.forms import checkName, checkMail, checkPW, checkPW_Confirm, SignUpForm
 from django.test import TestCase
 from Prototype.models import *
@@ -185,3 +184,141 @@ class AccessRestrictionTest(TestCase):
             response,
             f"{settings.LOGIN_URL}?next={reverse('modifier_projet', args=[self.projet.id])}"
         )
+
+class VisualiserAvancementTest(TestCase):
+
+    def setUp(self):
+        # Créer un utilisateur chef de projet
+        self.user = User.objects.create_user(username='chef', password='password123')
+        group = Group.objects.create(name='chef_projets')
+        self.user.groups.add(group)
+
+        # Connecter l'utilisateur
+        self.client.login(username='chef', password='password123')
+
+        # Créer un projet et l'assigner à self.projet
+        self.projet = Projet.objects.create(
+            nom="Projet Test",
+            description="Description de test",
+            date_debut="2024-01-01",
+            date_fin="2024-12-31"
+        )
+
+        # Ajouter des tâches avec un responsable
+        self.tache1 = Tache.objects.create(
+            titre="Tâche 1",
+            description="Description 1",
+            projet=self.projet,
+            statut="a_faire",
+            responsable=self.user  # Ajout d'un responsable
+        )
+        self.tache2 = Tache.objects.create(
+            titre="Tâche 2",
+            description="Description 2",
+            projet=self.projet,
+            statut="termine",
+            responsable=self.user  # Ajout d'un responsable
+        )
+
+    def test_avancement(self):
+        """Teste le calcul de l'avancement"""
+        response = self.client.get(reverse('visualiser_avancement', args=[self.projet.id]))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Avancement global : 50.0%")
+
+class ModifierProjetViewTest(TestCase):
+
+    def setUp(self):
+        # Créer un utilisateur chef de projet
+        self.user = User.objects.create_user(username='chef', password='password123')
+        group = Group.objects.create(name='chef_projets')
+        self.user.groups.add(group)
+
+        # Connecter l'utilisateur
+        self.client.login(username='chef', password='password123')
+
+        # Créer un projet
+        self.projet = Projet.objects.create(
+            nom="Projet Initial",
+            description="Description initiale",
+            date_debut="2024-01-01",
+            date_fin="2024-12-31"
+        )
+
+        # Ajouter des membres au projet
+        self.membre1 = User.objects.create_user(username='membre1', password='password123')
+        self.membre2 = User.objects.create_user(username='membre2', password='password123')
+        self.projet.membres.add(self.membre1, self.membre2)
+
+        # Ajouter des tâches associées
+        self.tache1 = Tache.objects.create(
+            titre="Tâche 1",
+            description="Description 1",
+            projet=self.projet,
+            statut="a_faire",
+            responsable=self.membre1
+        )
+        self.tache2 = Tache.objects.create(
+            titre="Tâche 2",
+            description="Description 2",
+            projet=self.projet,
+            statut="en_cours",
+            responsable=self.membre2
+        )
+
+    def test_modifier_projet_get(self):
+        """Test que la page de modification du projet s'affiche correctement"""
+        response = self.client.get(reverse('modifier_projet', args=[self.projet.id]))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'gestion_projets/modifier_projet.html')
+        self.assertContains(response, "Projet Initial")  # Vérifie que le nom du projet est affiché
+        self.assertContains(response, "Tâche 1")  # Vérifie qu'une tâche est affichée
+
+    def test_modifier_projet_post(self):
+        """Test que les modifications du projet et des tâches sont enregistrées correctement"""
+        data = {
+            # Modification des informations du projet
+            'nom': 'Projet Modifié',
+            'description': 'Description modifiée',
+
+            # Modification des tâches
+            f'titre_{self.tache1.id}': 'Tâche 1 Modifiée',
+            f'statut_{self.tache1.id}': 'termine',
+            f'responsable_{self.tache1.id}': self.membre2.id,
+
+            f'titre_{self.tache2.id}': 'Tâche 2 Modifiée',
+            f'statut_{self.tache2.id}': 'a_faire',
+            f'responsable_{self.tache2.id}': self.membre1.id,
+        }
+
+        response = self.client.post(reverse('modifier_projet', args=[self.projet.id]), data)
+        self.assertEqual(response.status_code, 302)  # Vérifie la redirection après modification
+        self.assertRedirects(response, reverse('page_chef_projets'))
+
+        # Vérifier les modifications du projet
+        self.projet.refresh_from_db()
+        self.assertEqual(self.projet.nom, 'Projet Modifié')
+        self.assertEqual(self.projet.description, 'Description modifiée')
+
+        # Vérifier les modifications des tâches
+        self.tache1.refresh_from_db()
+        self.assertEqual(self.tache1.titre, 'Tâche 1 Modifiée')
+        self.assertEqual(self.tache1.statut, 'termine')
+        self.assertEqual(self.tache1.responsable, self.membre2)
+
+        self.tache2.refresh_from_db()
+        self.assertEqual(self.tache2.titre, 'Tâche 2 Modifiée')
+        self.assertEqual(self.tache2.statut, 'a_faire')
+        self.assertEqual(self.tache2.responsable, self.membre1)
+
+    def test_modifier_projet_invalid_user(self):
+        """Test qu'un utilisateur non autorisé ne peut pas accéder à la page"""
+        # Déconnecter l'utilisateur actuel
+        self.client.logout()
+
+        # Créer un utilisateur non chef de projet
+        autre_utilisateur = User.objects.create_user(username='nonchef', password='password123')
+        self.client.login(username='nonchef', password='password123')
+
+        response = self.client.get(reverse('modifier_projet', args=[self.projet.id]))
+        self.assertEqual(response.status_code, 302)  # Accès interdit pour un utilisateur non chef de projet

@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Avancement du projet{% endblock %}
+
+{% block content %}
+<style>
+    .container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 20px;
+        font-family: Arial, sans-serif;
+    }
+
+    h1 {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+
+    th, td {
+        border: 1px solid #ddd;
+        text-align: left;
+        padding: 10px;
+    }
+
+    th {
+        background-color: #f4f4f4;
+        font-weight: bold;
+    }
+
+    tr:nth-child(even) {
+        background-color: #f9f9f9;
+    }
+
+    .statut-termine {
+        background-color: #d4edda;
+        color: #155724;
+        font-weight: bold;
+        text-align: center;
+    }
+
+    .statut-en-cours {
+        background-color: #fff3cd;
+        color: #856404;
+        font-weight: bold;
+        text-align: center;
+    }
+
+    .statut-a-faire {
+        background-color: #f8d7da;
+        color: #721c24;
+        font-weight: bold;
+        text-align: center;
+    }
+
+    .btn-secondary {
+        background-color: #ccc;
+        color: black;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+    }
+
+    .btn-secondary:hover {
+        background-color: #bbb;
+    }
+
+    .progress-bar-container {
+        margin-top: 20px;
+    }
+
+    .progress-bar {
+        height: 25px;
+        background-color: #f3f3f3;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        overflow: hidden;
+    }
+
+    .progress-bar-fill {
+        height: 100%;
+        background-color: #4caf50;
+        text-align: center;
+        color: white;
+        font-weight: bold;
+        line-height: 25px;
+    }
+</style>
+
+<div class="container">
+    <h1>Avancement du projet : <strong>{{ projet.nom }}</strong></h1>
+
+    <!-- Progress bar -->
+    <div class="progress-bar-container">
+        <p>Avancement global : {{ avancement }}%</p>
+        <div class="progress-bar">
+            <div class="progress-bar-fill" style="width: {{ avancement }}%;">
+                {{ avancement }}%
+            </div>
+        </div>
+    </div>
+
+    <!-- Tableau des tâches -->
+    <h2>Tâches associées</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Titre</th>
+                <th>Description</th>
+                <th>Statut</th>
+                <th>Responsable</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for tache in projet.taches.all %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ tache.titre }}</td>
+                <td>{{ tache.description }}</td>
+                <td class="
+                    {% if tache.statut == 'termine' %}statut-termine
+                    {% elif tache.statut == 'en_cours' %}statut-en-cours
+                    {% else %}statut-a-faire{% endif %}
+                ">
+                    {{ tache.statut|title }}
+                </td>
+                <td>{{ tache.responsable.username }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="text-end" style="margin-top: 20px;">
+        <a href="{% url 'page_chef_projets' %}" class="btn-secondary">Retour à la gestion des projets</a>
+    </div>
+</div>
+{% endblock %}

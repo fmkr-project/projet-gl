@@ -1,25 +1,147 @@
 {% extends "base.html" %}
 {% load static %}
 
-
-{% block title %}Gestion de Projets{% endblock %}
+{% block title %}Modifier le projet{% endblock %}
 
 {% block content %}
-<body>
-    <h1>Modifier le projet : {{ projet.nom }}</h1>
+<style>
+    .container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 20px;
+    }
 
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    label {
+        font-weight: bold;
+        color: #333;
+        display: block;
+        margin-bottom: 5px;
+    }
+
+    input, select, textarea {
+        width: 100%;
+        padding: 10px;
+        margin-top: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 16px;
+    }
+
+    .btn-submit {
+        display: block;
+        width: 100%;
+        background-color: #4CAF50;
+        color: white;
+        padding: 10px;
+        font-size: 16px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .btn-submit:hover {
+        background-color: #45a049;
+    }
+     .btn-secondary {
+        background-color: #ccc;
+        color: black;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+    }
+
+    .btn-secondary:hover {
+        background-color: #bbb;
+    }
+
+    .task-list {
+        margin-top: 40px;
+    }
+
+    .task-item {
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 15px;
+        background-color: #f9f9f9;
+    }
+
+    .task-item label {
+        margin-bottom: 8px;
+    }
+
+    .task-item select,
+    .task-item input {
+        width: 100%;
+    }
+</style>
+
+<div class="container">
+    <h1>Modifier le projet : <strong>{{ projet.nom }}</strong></h1>
+
+    <!-- Formulaire de modification du projet -->
     <form method="POST">
         {% csrf_token %}
+        
+        <div class="form-group">
+            <label for="nom">Nom du projet</label>
+            <input type="text" name="nom" value="{{ projet.nom }}" required>
+        </div>
 
-        <label for="nom">Nom du projet :</label>
-        <input type="text" name="nom" value="{{ projet.nom }}" required><br><br>
+        <div class="form-group">
+            <label for="description">Description du projet</label>
+            <textarea name="description" rows="4" required>{{ projet.description }}</textarea>
+        </div>
 
-        <label for="description">Description :</label>
-        <textarea name="description" required>{{ projet.description }}</textarea><br><br>
+        <!-- Liste des tâches associées -->
+        <div class="task-list">
+            <h3>Tâches associées</h3>
+            {% for tache in taches %}
+                <div class="task-item">
+                    <h4>Tâche #{{ forloop.counter }} : {{ tache.titre }}</h4>
 
-        <button type="submit">Enregistrer les modifications</button>
+                    <div class="form-group">
+                        <label for="titre_{{ tache.id }}">Titre de la tâche</label>
+                        <input type="text" name="titre_{{ tache.id }}" value="{{ tache.titre }}">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="statut_{{ tache.id }}">Statut</label>
+                        <select name="statut_{{ tache.id }}">
+                            <option value="a_faire" {% if tache.statut == 'a_faire' %}selected{% endif %}>À faire</option>
+                            <option value="en_cours" {% if tache.statut == 'en_cours' %}selected{% endif %}>En cours</option>
+                            <option value="termine" {% if tache.statut == 'termine' %}selected{% endif %}>Terminé</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="responsable_{{ tache.id }}">Responsable</label>
+                        <select name="responsable_{{ tache.id }}">
+                            <option value="">Choisir un responsable</option>
+                            {% for user in projet.membres.all %}
+                                <option value="{{ user.id }}" {% if tache.responsable.id == user.id %}selected{% endif %}>
+                                    {{ user.username }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- Bouton pour soumettre les modifications du projet et des tâches -->
+        <button type="submit" class="btn-submit">Enregistrer les modifications</button>
     </form>
-
-    <a href="{% url 'page_chef_projets' %}">Retour à la gestion des projets</a>
-</body>
+    <div class="text-end">
+        <a href="{% url 'page_chef_projets' %}" class="btn-secondary">Retour à la gestion des projets</a>
+    </div>
+</div>
 {% endblock %}
