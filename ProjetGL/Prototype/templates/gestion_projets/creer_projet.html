@@ -18,6 +18,10 @@
         <label for="date_fin">Date de Fin :</label>
         <input type="date" name="date_fin" required><br><br>
         
+        {% if date_error %}
+        <p style="color: red;">La date de fin spécifiée est antérieure à la date de début.</p>
+        {% endif %}
+
         <label for="membres">Choisir des Membres :</label>
         <select name="membres" multiple>
             {% for utilisateur in utilisateurs %}

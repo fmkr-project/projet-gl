@@ -157,6 +157,9 @@ def creer_projet(request):
         date_debut = request.POST.get('date_debut')
         date_fin = request.POST.get('date_fin')
 
+        if (date_fin < date_debut):
+            return render(request, 'gestion_projets/creer_projet.html', {'date_error': True})
+
         # Créer le projet
         projet = Projet.objects.create(
             nom=nom,
