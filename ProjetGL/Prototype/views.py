@@ -70,16 +70,39 @@ def index(request):
 
     # Si un projet est sélectionné, filtrez les tâches par projet
     selected_projet_id = request.GET.get('projet')
-    if selected_projet_id:
-        selected_projet = get_object_or_404(Projet, id=selected_projet_id)
-        taches_a_faire = selected_projet.taches.filter(statut='a_faire')
-        taches_en_cours = selected_projet.taches.filter(statut='en_cours')
-        taches_termine = selected_projet.taches.filter(statut='termine')
-    else:
+    try:
+        if (selected_projet_id.isnumeric()):
+            selected_projet = get_object_or_404(Projet, id=selected_projet_id)
+            taches_a_faire = selected_projet.taches.filter(statut='a_faire')
+            taches_en_cours = selected_projet.taches.filter(statut='en_cours')
+            taches_termine = selected_projet.taches.filter(statut='termine')
+        elif (selected_projet_id == "all"):
+            selected_projet = None
+            taches_a_faire = [
+                tache
+                for projet in projets
+                for tache in projet.taches.filter(statut='a_faire')
+            ]
+            taches_en_cours = [
+                tache
+                for projet in projets
+                for tache in projet.taches.filter(statut='en_cours')
+            ]
+            taches_termine = [
+                tache
+                for projet in projets
+                for tache in projet.taches.filter(statut='termine')
+            ]
+        else:
+            raise AttributeError
+    except AttributeError:
         selected_projet = None
         taches_a_faire = Tache.objects.filter(statut='a_faire')
         taches_en_cours = Tache.objects.filter(statut='en_cours')
         taches_termine = Tache.objects.filter(statut='termine')
+
+    
+    
 
     return render(request, 'gestion_projets/index.html', {
         'projets': projets,

@@ -87,6 +87,7 @@
     <form method="get" action="{% url 'index' %}">
         <select name="projet" id="projet-select" onchange="this.form.submit()">
             <option value="" disabled selected>Choisir un projet</option>
+            <option value="all" selected>Tous les projets</option>
             {% for projet in projets %}
                 <option value="{{ projet.id }}" {% if projet.id == selected_projet.id %}selected{% endif %}>
                     {{ projet.nom }}
