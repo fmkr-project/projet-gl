@@ -1,3 +1,4 @@
+from django.core.exceptions import PermissionDenied
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -120,6 +121,7 @@ def supprimer_commentaire(request, commentaire_id):
 # Vérification que l'utilisateur appartient au groupe chef_projets
 def est_chef_projet(user):
     return user.groups.filter(name='chef_projets').exists()
+
 
 @login_required
 @user_passes_test(est_chef_projet)  # Vérifie si l'utilisateur est un chef de projet
