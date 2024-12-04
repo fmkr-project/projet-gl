@@ -5,37 +5,103 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Mon Application{% endblock %}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    
+
     <style>
-        /* Exemple de styles pour le header */
+        /* Styles globaux */
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+
         header {
             background: #333;
             color: white;
             padding: 15px;
             text-align: center;
         }
+
         nav {
             margin-top: 10px;
         }
+
         nav a {
             color: white;
             margin: 0 10px;
             text-decoration: none;
         }
-        img {
-            border: none !important;
+
+        nav a:hover {
+            text-decoration: underline;
         }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            padding: 10px;
+            background: #333;
+            color: white;
+        }
+
+        /* Alertes */
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        /* Boutons */
+        button, .btn {
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover, .btn:hover {
+            background-color: #0056b3;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+
+        {% block styles %}{% endblock %}
     </style>
     {% load static %}
 </head>
 <body>
     <header>
         {% if user.is_authenticated %}
-           Bonjour, {{ user.username }} !
+            Bonjour, {{ user.username }} !
         {% else %}
             <a href="{% url 'login' %}">Se connecter</a>
         {% endif %}
-    
+
         <h1>Mon Application</h1>
         <nav>
             <a href="/">Accueil</a>
@@ -44,7 +110,7 @@
             {% for group in user.groups.all %}
                 {% if group.name == 'chef_projets' %}
                     <a href="{% url 'page_chef_projets' %}" class="button">Accéder à la gestion des projets</a>
-                {% endif %} 
+                {% endif %}
             {% endfor %}
                 
             {% if user.is_authenticated %}

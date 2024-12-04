@@ -1,87 +1,124 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Modifier le projet{% endblock %}
+{% block title %}Modifier le Projet{% endblock %}
 
 {% block content %}
-<style>
+    <style>
+    /* Style général du conteneur */
     .container {
         max-width: 900px;
-        margin: 0 auto;
-        padding: 20px;
+        margin: 30px auto;
+        background: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        padding: 25px;
     }
 
+    /* Titres */
+    h1, h3 {
+        text-align: center;
+        color: #333;
+        font-weight: bold;
+        margin-bottom: 20px;
+    }
+
+    /* Champs de formulaire */
     .form-group {
         margin-bottom: 20px;
     }
 
     label {
+        display: block;
         font-weight: bold;
-        color: #333;
-        display: block;
         margin-bottom: 5px;
+        color: #555;
     }
 
-    input, select, textarea {
+    input, textarea, select {
         width: 100%;
         padding: 10px;
-        margin-top: 8px;
+        font-size: 16px;
         border: 1px solid #ddd;
-        border-radius: 4px;
-        font-size: 16px;
+        border-radius: 5px;
+        box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+        transition: border-color 0.3s;
     }
 
-    .btn-submit {
-        display: block;
-        width: 100%;
-        background-color: #4CAF50;
+    input:focus, textarea:focus, select:focus {
+        border-color: #007bff;
+        outline: none;
+    }
+
+    textarea {
+        resize: vertical;
+        height: 120px;
+    }
+
+    /* Bouton principal */
+    .btn-primary {
+        background-color: #007bff;
         color: white;
-        padding: 10px;
+        padding: 10px 20px;
         font-size: 16px;
+        font-weight: bold;
         border: none;
-        border-radius: 4px;
+        border-radius: 5px;
         cursor: pointer;
+        display: block;
+        margin: 15px 0;
+        text-align: center;
+        transition: background-color 0.3s;
     }
 
-    .btn-submit:hover {
-        background-color: #45a049;
+    .btn-primary:hover {
+        background-color: #0056b3;
     }
-     .btn-secondary {
-        background-color: #ccc;
-        color: black;
-        padding: 10px 15px;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        text-decoration: none;
-        display: inline-block;
+
+    /* Bouton secondaire */
+    .btn-secondary {
+        background-color: #6c757d;
+        color: white;
+        padding: 10px 20px;
         font-size: 16px;
+        font-weight: bold;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        display: inline-block;
+        text-align: center;
+        transition: background-color 0.3s;
+        margin-top: 20px;
     }
 
     .btn-secondary:hover {
-        background-color: #bbb;
+        background-color: #5a6268;
     }
 
+    /* Style des tâches */
     .task-list {
-        margin-top: 40px;
+        margin-top: 30px;
     }
 
     .task-item {
+        background: #f9f9f9;
         border: 1px solid #ddd;
-        border-radius: 8px;
         padding: 15px;
         margin-bottom: 15px;
-        background-color: #f9f9f9;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        transition: background-color 0.3s;
     }
 
-    .task-item label {
-        margin-bottom: 8px;
+    .task-item:hover {
+        background: #f1f1f1;
     }
 
-    .task-item select,
-    .task-item input {
-        width: 100%;
+    .task-item h4 {
+        font-size: 18px;
+        color: #333;
     }
+
 </style>
 
 <div class="container">
@@ -90,58 +127,48 @@
     <!-- Formulaire de modification du projet -->
     <form method="POST">
         {% csrf_token %}
-        
+
+        <!-- Champ pour le nom du projet -->
         <div class="form-group">
             <label for="nom">Nom du projet</label>
             <input type="text" name="nom" value="{{ projet.nom }}" required>
         </div>
 
+        <!-- Bouton "Enregistrer les modifications" -->
+        <button type="submit" class="btn-primary">Enregistrer les modifications</button>
+
+        <!-- Champ pour la description du projet -->
         <div class="form-group">
             <label for="description">Description du projet</label>
-            <textarea name="description" rows="4" required>{{ projet.description }}</textarea>
+            <textarea name="description" required>{{ projet.description }}</textarea>
         </div>
-
-        <!-- Liste des tâches associées -->
-        <div class="task-list">
-            <h3>Tâches associées</h3>
-            {% for tache in taches %}
-                <div class="task-item">
-                    <h4>Tâche #{{ forloop.counter }} : {{ tache.titre }}</h4>
-
-                    <div class="form-group">
-                        <label for="titre_{{ tache.id }}">Titre de la tâche</label>
-                        <input type="text" name="titre_{{ tache.id }}" value="{{ tache.titre }}">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="statut_{{ tache.id }}">Statut</label>
-                        <select name="statut_{{ tache.id }}">
-                            <option value="a_faire" {% if tache.statut == 'a_faire' %}selected{% endif %}>À faire</option>
-                            <option value="en_cours" {% if tache.statut == 'en_cours' %}selected{% endif %}>En cours</option>
-                            <option value="termine" {% if tache.statut == 'termine' %}selected{% endif %}>Terminé</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="responsable_{{ tache.id }}">Responsable</label>
-                        <select name="responsable_{{ tache.id }}">
-                            <option value="">Choisir un responsable</option>
-                            {% for user in projet.membres.all %}
-                                <option value="{{ user.id }}" {% if tache.responsable.id == user.id %}selected{% endif %}>
-                                    {{ user.username }}
-                                </option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                </div>
-            {% endfor %}
-        </div>
-
-        <!-- Bouton pour soumettre les modifications du projet et des tâches -->
-        <button type="submit" class="btn-submit">Enregistrer les modifications</button>
     </form>
-    <div class="text-end">
-        <a href="{% url 'page_chef_projets' %}" class="btn-secondary">Retour à la gestion des projets</a>
+
+    <!-- Liste des tâches associées -->
+    <div class="task-list">
+        <h3>Tâches associées</h3>
+        {% for tache in taches %}
+            <div class="task-item">
+                <h4>Tâche #{{ forloop.counter }} : {{ tache.titre }}</h4>
+
+                <p><strong>Statut:</strong> {{ tache.statut }}</p>
+                <p><strong>Responsable:</strong> {{ tache.responsable.username }}</p>
+
+                <!-- Boutons alignés et de même taille -->
+                <div class="btn-group">
+                    <a href="{% url 'modifier_tache' tache.id %}" class="btn-primary">Modifier</a>
+                    <form action="{% url 'supprimer_tache' tache.id %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn-danger">Supprimer</button>
+                    </form>
+                </div>
+            </div>
+
+        {% endfor %}
     </div>
+
+    <!-- Bouton pour revenir à la gestion des projets -->
+    <a href="{% url 'page_chef_projets' %}" class="btn-secondary">Retour à la gestion des projets</a>
 </div>
 {% endblock %}
+

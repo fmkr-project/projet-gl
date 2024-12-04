@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Modifier la Tâche{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h3>Modifier la tâche : {{ tache.titre }}</h3>
+
+    <!-- Formulaire pour modifier la tâche -->
+    <form method="POST">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label for="titre">Titre de la tâche</label>
+            <input type="text" name="titre" value="{{ tache.titre }}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="description">Description de la tâche</label>
+            <textarea name="description" rows="4" required>{{ tache.description }}</textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="statut">Statut</label>
+            <select name="statut">
+                <option value="a_faire" {% if tache.statut == 'a_faire' %}selected{% endif %}>À faire</option>
+                <option value="en_cours" {% if tache.statut == 'en_cours' %}selected{% endif %}>En cours</option>
+                <option value="termine" {% if tache.statut == 'termine' %}selected{% endif %}>Terminé</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="responsable">Responsable</label>
+            <select name="responsable">
+                <option value="">Choisir un responsable</option>
+                {% for user in tache.projet.membres.all %}
+                    <option value="{{ user.id }}" {% if tache.responsable.id == user.id %}selected{% endif %}>
+                        {{ user.username }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
+    </form>
+
+    <a href="{% url 'modifier_projet' projet_id=tache.projet.id %}" class="btn btn-secondary">Retour à la gestion du projet</a>
+</div>
+{% endblock %}

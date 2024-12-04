@@ -25,14 +25,7 @@
                     </button>
                 </form>
             </td>
-            <td>
-                <form action="{% url 'supprimer_tache' tache.id %}" method="post" style="display:inline;">
-                    {% csrf_token %}
-                    <button type="submit" class="delete-btn">
-                        <img src="{% static 'images/bin.png' %}" alt="Supprimer">
-                    </button>
-                </form>
-            </td>
+            
         </li>
             
         {% empty %}

@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404, redirect
@@ -58,7 +59,9 @@ def supprimer_tache(request, tache_id):
     tache = get_object_or_404(Tache, pk=tache_id)
     projet_id = tache.projet.id
     tache.delete()
-    return redirect('detail_projet', projet_id=projet_id)
+    return redirect('page_chef_projets')
+
+
 
 def login(request):
     return render(request, 'login.html')
@@ -100,9 +103,6 @@ def index(request):
         taches_a_faire = Tache.objects.filter(statut='a_faire')
         taches_en_cours = Tache.objects.filter(statut='en_cours')
         taches_termine = Tache.objects.filter(statut='termine')
-
-    
-    
 
     return render(request, 'gestion_projets/index.html', {
         'projets': projets,
@@ -163,7 +163,7 @@ def est_chef_projet(user):
 
 
 @login_required
-@user_passes_test(est_chef_projet)  # Vérifie si l'utilisateur est un chef de projet
+@user_passes_test(est_chef_projet)
 def page_chef_projets(request):
     # Filtrer les chefs de projets
     projets = Projet.objects.all()
@@ -172,7 +172,7 @@ def page_chef_projets(request):
 
 
 @login_required
-@user_passes_test(est_chef_projet)  # Assurez-vous que seul un chef de projet peut ajouter des projets
+@user_passes_test(est_chef_projet)
 def creer_projet(request):
     if request.method == 'POST':
         nom = request.POST.get('nom')
@@ -234,38 +234,22 @@ def supprimer_projet(request, projet_id):
 @user_passes_test(est_chef_projet)
 def modifier_projet(request, projet_id):
     projet = get_object_or_404(Projet, id=projet_id)
-    membres = projet.membres.all()  # Utilisateurs assignés au projet
-    taches = projet.taches.all()   # Tâches associées au projet
+    taches = projet.taches.all()  # Récupérer toutes les tâches associées au projet
 
     if request.method == 'POST':
-        # Mettre à jour les informations du projet
-        projet.nom = request.POST.get('nom')
-        projet.description = request.POST.get('description')
+        # Mettre à jour le projet
+        projet.nom = request.POST.get('nom', projet.nom)  # Utilise la valeur actuelle si vide
+        projet.description = request.POST.get('description', projet.description)
         projet.save()
 
-        # Mettre à jour les tâches
-        for tache in taches:
-            tache_titre = request.POST.get(f"titre_{tache.id}")
-            tache_statut = request.POST.get(f"statut_{tache.id}")
-            tache_responsable_id = request.POST.get(f"responsable_{tache.id}")
-
-            if tache_titre:
-                tache.titre = tache_titre
-            if tache_statut:
-                tache.statut = tache_statut
-            if tache_responsable_id:
-                responsable = User.objects.filter(id=tache_responsable_id).first()
-                tache.responsable = responsable
-
-            tache.save()
-
-        return redirect('page_chef_projets')  # Rediriger après la sauvegarde
+        # Rediriger vers la page de gestion des projets après la modification
+        return redirect('page_chef_projets')
 
     return render(request, 'gestion_projets/modifier_projet.html', {
         'projet': projet,
-        'taches': taches,
-        'membres': membres,
+        'taches': taches
     })
+
 
 
 def signup(request):
@@ -308,3 +292,33 @@ def visualiser_avancement(request, projet_id):
         'taches': taches,
         'avancement': avancement
     })
+
+@login_required
+@user_passes_test(est_chef_projet)
+def modifier_tache(request, tache_id):
+    tache = get_object_or_404(Tache, id=tache_id)
+
+    if request.method == 'POST':
+        titre = request.POST.get('titre')
+        description = request.POST.get('description')
+        statut = request.POST.get('statut')
+        responsable_id = request.POST.get('responsable')
+
+        if titre:
+            tache.titre = titre
+        if description:
+            tache.description = description
+        if statut:
+            tache.statut = statut
+        if responsable_id:
+            responsable = get_object_or_404(User, id=responsable_id)
+            tache.responsable = responsable
+
+        tache.save()
+
+        # Ajouter un message de confirmation
+        messages.success(request, f"Tâche '{tache.titre}' mise à jour avec succès !")
+
+        return redirect('modifier_tache', tache_id=tache.id)
+
+    return render(request, 'gestion_projets/modifier_tache.html', {'tache': tache})
